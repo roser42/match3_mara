@@ -39,8 +39,8 @@ window.onload = function() {
         y: 113, // Y position
         columns: 8, // Number of tile columns
         rows: 8, // Number of tile rows
-        tilewidth: 40, // Visual width of a tile
-        tileheight: 40, // Visual height of a tile
+        tilewidth: 60, // Visual width of a tile
+        tileheight: 60, // Visual height of a tile
         tiles: [], // The two-dimensional tile array
         selectedtile: { selected: false, column: 0, row: 0 }
     };
@@ -87,8 +87,20 @@ window.onload = function() {
     // Gui buttons
     var buttons = [{ x: 30, y: 240, width: 150, height: 50, text: "New Game" },
         { x: 30, y: 300, width: 150, height: 50, text: "Show Moves" },
+
+    ];
+
+    var buttons2 = [{ x: 30, y: 240, width: 150, height: 50, text: "New Game" },
+        { x: 30, y: 300, width: 150, height: 50, text: "Show Moves" },
         { x: 30, y: 360, width: 150, height: 50, text: "Enable AI Bot" }
     ];
+
+
+    // Image loading global variables
+    var loadcount = 0;
+    var loadtotal = 0;
+    var preloaded = false;
+    images = [];
 
     // Initialize the game
     function init() {
@@ -106,6 +118,8 @@ window.onload = function() {
                 level.tiles[i][j] = { type: 0, shift: 0 }
             }
         }
+        images = loadImages(["img/sprite1.png"]);
+
 
         // New game
         newGame();
@@ -364,6 +378,9 @@ window.onload = function() {
 
                     // Draw the tile using the color
                     drawTile(coord.tilex, coord.tiley, col[0], col[1], col[2]);
+
+                    //Draw the tile using the img
+                    drawImg(coord.tilex, coord.tiley);
                 }
 
                 // Draw the selected tile
@@ -420,6 +437,43 @@ window.onload = function() {
     function drawTile(x, y, r, g, b) {
         context.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
         context.fillRect(x + 2, y + 2, level.tilewidth - 4, level.tileheight - 4);
+    }
+
+    // Draw a image
+    function drawImg(x, y) {
+        context.drawImage(images[0], x + 2, y + 2, level.tilewidth - 4, level.tileheight - 4);
+    }
+
+    function loadImages(imagefiles) {
+        // Initialize variables
+        loadcount = 0;
+        loadtotal = imagefiles.length;
+        preloaded = false;
+
+        // Load the images
+        var loadedimages = [];
+        for (var i = 0; i < imagefiles.length; i++) {
+            // Create the image object
+            var image = new Image();
+
+            // Add onload event handler
+            image.onload = function() {
+                loadcount++;
+                if (loadcount == loadtotal) {
+                    // Done loading
+                    preloaded = true;
+                }
+            };
+
+            // Set the source url of the image
+            image.src = imagefiles[i];
+
+            // Save to the image array
+            loadedimages[i] = image;
+        }
+
+        // Return an array of images
+        return loadedimages;
     }
 
     // Render clusters
